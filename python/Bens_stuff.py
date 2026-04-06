@@ -2,13 +2,14 @@ import csv
 
 DEFALT_YEAR = 0
 DEFALT_QUATER = 0
-DEFALT_REGION = "blank"
+STARTING_REGION = "blank"
+DEFALT_REGION = "United Kingdom"
 
 def main():
     with open('five_year_dataset.csv', mode='r') as file:
         year = DEFALT_YEAR
         quater = DEFALT_QUATER
-        region = DEFALT_REGION
+        region = STARTING_REGION
 
         print("opening sqrall 'skip' skips the field")
 
@@ -53,13 +54,13 @@ def main():
             
             region = region_code_to_region(region_code)
 
-        if region == "blank":
-            region = "United Kingdom"
+        if region == STARTING_REGION:
+            region = DEFALT_REGION
+
 
         print("region, year, quater")
         print(region, year, quater)
 
-        
         # defalt date = avrage over all
         # output expected New dwellings Price,New dwellings average advance,New dwellings average recorded income of borrowers,Other dwellings Price,Other dwellings average advance,Other dwellings average recorded income of borrowers,All dwellings Price,All dwellings average advance,All dwellings average recorded income of borrowers,First time buyers Price,First time buyers average advance,First time buyers average recorded income of borrowers,Former owner occupiers Price,Former owner occupiers average advance,Former owner occupiers average recorded income of borrowers
 
