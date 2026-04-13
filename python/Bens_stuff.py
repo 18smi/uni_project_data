@@ -1,4 +1,4 @@
-import pandas as pandas
+import pandas as pd
 
 CSV_NAME = "five_year_dataset.csv"
 
@@ -129,7 +129,7 @@ def display_prices(region, year, quater):
 
     date = str(year) + " Q" + str(quater)
 
-    csv = pandas.read_csv(CSV_NAME)
+    csv = pd.read_csv(CSV_NAME)
     chosen_row = []
     if year == DEFALT_YEAR:
         ...
