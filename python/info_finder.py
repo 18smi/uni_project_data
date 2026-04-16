@@ -35,7 +35,7 @@ def main():
             break
 
         if not valid_region(input_region): #invalid region
-            print("invalid date")
+            print("invalid region")
             continue
             
         region = input_region
@@ -47,7 +47,7 @@ def main():
         if region_code.lower() == "skip":
             break
             
-        if not valid_region_code:
+        if not valid_region_code(region_code):
             print("invalid region code")
             continue
 
@@ -107,7 +107,7 @@ def region_code_to_region(region_code):
     valid_regions = ["United Kingdom", "Great Britain", "England and Wales", "England", "North East", "North West", "Yorkshire and the Humber", "East Midlands", "West Midlands", "East of England", "London", "South East", "South West", "Wales", "Scotland", "Northern Ireland"]
     valid_region_codes = ["K02000001", "K03000001", "K04000001", "E92000001", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", "E12000006", "E12000007", "E12000008", "E12000009", "W92000004", "S92000003", "N92000001"] 
 
-    return valid_regions[valid_region_codes.index("region_code")]
+    return valid_regions[valid_region_codes.index(region_code)]
 
 def display_prices(region, year, quater):
     try:# checks all inputs are in the corect type
@@ -117,10 +117,10 @@ def display_prices(region, year, quater):
     except (ValueError, TypeError):
         return
     
-    if not 0 < quater < 5:
+    if not 0 < quater < 5 and quater != DEFALT_QUATER:
         print("invalid quater")
         return
-    if not 2020 < year < 2026:
+    if not 2020 < year < 2026 and year != DEFALT_YEAR:
         print("invalid year")
         return
     if not valid_region(region):
@@ -130,37 +130,38 @@ def display_prices(region, year, quater):
     date = str(year) + " Q" + str(quater)
 
     csv = pd.read_csv(CSV_NAME)
+
+    row_name = ["New dwellings Price", "New dwellings average advance", "New dwellings average recorded income of borrowers", 
+                "Other dwellings Price", "Other dwellings average advance", "Other dwellings average recorded income of borrowers", 
+                "All dwellings Price", "All dwellings average advance", "All dwellings average recorded income of borrowers", 
+                "First time buyers Price", "First time buyers average advance", "First time buyers average recorded income of borrowers", 
+                "Former owner occupiers Price", "Former owner occupiers average advance", "Former owner occupiers average recorded income of borrowers"]
+
     chosen_row = []
     if year == DEFALT_YEAR:
-        ...
-        # prices = average
+        inportant_row = csv[csv["Region"] == region]
+        if inportant_row.empty:
+            print("no rows found")
+            return
+        for name in row_name:
+            int_row = pd.to_numeric(inportant_row[name], errors="coerce")
+            value = int_row.mean(skipna=True)
+            chosen_row.append(value)
     else:
-        chosen_row = csv[(csv["Period"] == date) & (csv["Region"] == region)]
-
-    if chosen_row.empty:
-        print("no rows found")
-        return
+        inportant_row = csv[(csv["Period"] == date) & (csv["Region"] == region)]
+        if inportant_row.empty:
+            print("no rows found")
+            return
+        for i in range(0, len(row_name)):
+            chosen_row.append((inportant_row.iloc[0])[row_name[i]])
 
     
-    print("New dwellings Price = £",(chosen_row.iloc[0])["New dwellings Price"])
-    print("New dwellings average advance = £",(chosen_row.iloc[0])["New dwellings average advance"])
-    print("New dwellings average recorded income of borrowers = £",(chosen_row.iloc[0])["New dwellings average recorded income of borrowers"])
-    print('')
-    print("Other dwellings Price = £",(chosen_row.iloc[0])["Other dwellings Price"])
-    print("Other dwellings average advance = £",(chosen_row.iloc[0])["Other dwellings average advance"])
-    print("Other dwellings average recorded income of borrowers = £",(chosen_row.iloc[0])["Other dwellings average recorded income of borrowers"])
-    print('')
-    print("All dwellings Price = £",(chosen_row.iloc[0])["All dwellings Price"])
-    print("All dwellings average advance = £",(chosen_row.iloc[0])["All dwellings average advance"])
-    print("All dwellings average recorded income of borrowers = £",(chosen_row.iloc[0])["All dwellings average recorded income of borrowers"])
-    print('')
-    print("First time buyers Price = £",(chosen_row.iloc[0])["First time buyers Price"])
-    print("First time buyers average advance = £",(chosen_row.iloc[0])["First time buyers average advance"])
-    print("First time buyers average recorded income of borrowers = £",(chosen_row.iloc[0])["First time buyers average recorded income of borrowers"])
-    print('')
-    print("Former owner occupiers Price = £",(chosen_row.iloc[0])["Former owner occupiers Price"])
-    print("Former owner occupiers average advance = £",(chosen_row.iloc[0])["Former owner occupiers average advance"])
-    print("Former owner occupiers average recorded income of borrowers = £",(chosen_row.iloc[0])["Former owner occupiers average recorded income of borrowers"])
+
+    for i in range(0, len(row_name)):
+        print(row_name[i], '£', chosen_row[i])
+
+    
+    
 
 
     
