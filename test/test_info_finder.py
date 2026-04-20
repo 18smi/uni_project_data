@@ -1,0 +1,100 @@
+from src.info_finder import valid_date
+from src.info_finder import valid_region
+from src.info_finder import valid_region_code
+from src.info_finder import year_finder
+from src.info_finder import quater_finder
+from src.info_finder import region_code_to_region
+
+
+def test_valid_date():
+    assert valid_date("6/11/2024"), "6/11/2024"
+    assert valid_date("1/1/2021"), "1/1/2021"
+    assert valid_date("31/12/2025"), "31/12/2025"
+    assert not valid_date("0/1/2021"), "day to low check"
+    assert not valid_date("1/0/2021"), "month to low check"
+    assert not valid_date("1/1/2020"), "year to low check"
+    assert not valid_date("32/12/2025"), "day to high check"
+    assert not valid_date("31/13/2025"), "month to high check"
+    assert not valid_date("31/12/2026"), "year to high check"
+    assert not valid_date("31/4/2025"), "day to high for 30 month"
+    assert not valid_date("30/2/2025"), "day to high for febuary"
+    assert valid_date("6 /11/    2024"), "spaces in date"
+    assert valid_date("    6/11/2024"), "space before date"
+    assert valid_date("6/11/2024    "), "space after date"
+    assert not valid_date("6-11-2024"), "using - instead of /"
+    assert not valid_date("6 11 2024"), "using spaces instead of /"
+    assert not valid_date("#''34y2/de2"), "non interger inputs"
+
+def test_valid_region():
+    assert valid_region("United Kingdom"), "United Kingdom"
+    assert valid_region("great britain"), "Great Britain in lowercase"
+    assert valid_region("ENGLAND AND WALES"), "England and Wales in upercase"
+    assert valid_region("England"), "England"
+    assert valid_region("North East"), "North East"
+    assert not valid_region("NorthEast"), "North East without the space"
+    assert valid_region("North West"), "North West"
+    assert valid_region("Yorkshire and the Humber"), "Yorkshire and the Humber"
+    assert valid_region("East Midlands"), "East Midlands"
+    assert valid_region("West Midlands"), "West Midlands"
+    assert valid_region("East of England"), "East of England"
+    assert valid_region("London"), "London"
+    assert valid_region("South East"), "South East"
+    assert valid_region("South West"), "South West"
+    assert valid_region("Wales"), "Wales"
+    assert valid_region("Scotland"), "Scotland"
+    assert valid_region("Northern Ireland"), "Northern Ireland"
+    assert not valid_region("4#'/424oj21"), "random string"
+
+def test_valid_region_code():
+    assert valid_region_code("K02000001"), "K02000001"
+    assert not valid_region_code("k03000001"), "K03000001 but lowecase"
+    assert valid_region_code("K04000001"), "K04000001"
+    assert not valid_region_code("K04001234"), "non existant region code"
+    assert valid_region_code("E92000001"), "E92000001"
+    assert valid_region_code("E12000001"), "E12000001"
+    assert valid_region_code("E12000002"), "E12000002"
+    assert valid_region_code("E12000003"), "E12000003"
+    assert valid_region_code("E12000004"), "E12000004"
+    assert valid_region_code("E12000005"), "E12000005"
+    assert valid_region_code("E12000006"), "E12000006"
+    assert valid_region_code("E12000007"), "E12000007"
+    assert valid_region_code("E12000008"), "E12000008"
+    assert valid_region_code("E12000009"), "E12000009"
+    assert valid_region_code("W92000004"), "W92000004"
+    assert valid_region_code("S92000003"), "S92000003"
+    assert valid_region_code("N92000001"), "N92000001"
+    assert not valid_region_code("35#;.hvu8"), "random string"
+
+def test_year_finder():
+    assert year_finder("1/1/2021") == 2021, "1/1/2021"
+    assert year_finder("7igty#;kj") == -1, "random string"
+    assert year_finder("1981") == -1, "just a number not a date"
+    assert year_finder("900/45/54") == 54, "year is unusaual number but still valid"
+    assert year_finder("4/7/word") == -1, "year is a word not a number"
+
+def test_quater_finder():
+    assert quater_finder("1/1/2025") == 1, "quater 1 tested"
+    assert quater_finder("1/4/2025") == 2, "quater 2 tested"
+    assert quater_finder("1/7/2025") == 3, "quater 3 tested"
+    assert quater_finder("1/10/2025") == 4, "quater 4 tested"
+    assert quater_finder("1/-7/2025") == 0, "not a quater tested by negitive month"
+    assert quater_finder("1/15/2025") == 0, "not a quater tested by to big of a month"
+
+def test_region_code_to_region():
+    assert region_code_to_region("K02000001") == "United Kingdom"
+    assert region_code_to_region("K03000001") == "Great Britain"
+    assert region_code_to_region("K04000001") == "England and Wales"
+    assert region_code_to_region("E92000001") == "England"
+    assert region_code_to_region("E12000001") == "North East"
+    assert region_code_to_region("E12000002") == "North West"
+    assert region_code_to_region("E12000003") == "Yorkshire and the Humber"
+    assert region_code_to_region("E12000004") == "East Midlands"
+    assert region_code_to_region("E12000005") == "West Midlands"
+    assert region_code_to_region("E12000006") == "East of England"
+    assert region_code_to_region("E12000007") == "London"
+    assert region_code_to_region("E12000008") == "South East"
+    assert region_code_to_region("E12000009") == "South West"
+    assert region_code_to_region("W92000004") == "Wales"
+    assert region_code_to_region("S92000003") == "Scotland"
+    assert region_code_to_region("N92000001") == "Northern Ireland"
+    assert region_code_to_region("'r;r3#'2") == "not found", "not a real region code used"
